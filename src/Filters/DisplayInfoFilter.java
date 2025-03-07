@@ -24,20 +24,25 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     public DImage processImage(DImage img) {
         short[][] grid = img.getBWPixelGrid();
 
-        grid = crop(grid,0,0,500,500);
+        grid = crop(grid, 0, 0, 500, 500);
 
-        System.out.println("Image is " + grid.length + " by "+ grid[0].length);
+        System.out.println("Image is " + grid.length + " by " + grid[0].length);
 
         getBlackAndWhiteCount(grid);
 
         //find location of first timing mark, then update timingMarkVerticalDistance accordingly
-        for (int r = 0; r < grid.length; r++) {
-            if(grid[r][timingMarkLeftBound] < blackThreshold){
-                for (int r2 = 0; r2 < timingMarkHeight; r2++) {
-
-                }
-            }
+        int r = 0;
+        while (grid[r][timingMarkLeftBound] >= blackThreshold) {
+            r++;
         }
+        int currTimingMarkTopBound = r;
+        //loop over row of bubbles within height of timing mark; for each bubble get black counts
+        for (int r2 = currTimingMarkTopBound; r2 < currTimingMarkTopBound+timingMarkHeight; r2++) {
+
+        }
+        //222-105=117
+        //each bubble 20px wide
+        //gap between bubbles=5px
 
         img.setPixels(grid);
         return img;
