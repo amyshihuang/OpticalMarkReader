@@ -4,6 +4,8 @@ import Interfaces.Interactive;
 import Interfaces.PixelFilter;
 import core.DImage;
 
+import java.util.ArrayList;
+
 public class DisplayInfoFilter implements PixelFilter, Interactive {
     private int timingMarkHeight = 20; //timing mark = each black rectangle on left side of scantron sheet
     private int timingMarkWidth = 8;
@@ -28,7 +30,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         System.out.println("Image is " + grid.length + " by " + grid[0].length);
 
-        getBlackAndWhiteCount(grid);
+        getBlackAndWhiteCount(grid,0,0,grid.length,grid[0].length);
 
         //find location of first timing mark, then update timingMarkVerticalDistance accordingly
         int r = 0;
@@ -37,8 +39,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         }
         int currTimingMarkTopBound = r;
         //loop over row of bubbles within height of timing mark; for each bubble get black counts
-        for (int r2 = currTimingMarkTopBound; r2 < currTimingMarkTopBound+timingMarkHeight; r2++) {
-
+        ArrayList<Integer> blackAndWhiteCountsPerRow = new ArrayList<>();
+        for (int currBubble = 0; currBubble < 5; currBubble++) {
+            //c1=left bound of zeroth bubble
+            //c2=right bound of 4th(last) bubble
+            int currCount = getBlackCount(grid,currTimingMarkTopBound,105+(currBubble*25),currTimingMarkTopBound+timingMarkHeight,(105+(currBubble*25))+20);
+            blackAndWhiteCountsPerRow.add(currCount);
         }
         //222-105=117
         //each bubble 20px wide
@@ -61,11 +67,11 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return grid2;
     }
 
-    public void getBlackAndWhiteCount(short[][] grid){
+    public void getBlackAndWhiteCount(short[][] grid, int r1, int c1, int r2, int c2){
         int blackCount = 0;
         int whiteCount = 0;
-        for (int r = 0; r < grid.length; r++) {
-            for (int c = 0; c < grid[0].length; c++) {
+        for (int r = r1; r < r2; r++) {
+            for (int c = c1; c < c2; c++) {
                 if (grid[r][c] < blackThreshold) blackCount++;
                 if (grid[r][c] > whiteThreshold) whiteCount++;
             }
@@ -73,6 +79,16 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         System.out.println(blackCount + " nearly black pixels and " + whiteCount + " nearly white pixels");
         System.out.println("----------------------------------------");
         System.out.println("If you want, you could output information to a file instead of printing it.");
+    }
+
+    public int getBlackCount(short[][] grid, int r1, int c1, int r2, int c2){
+        int blackCount = 0;
+        for (int r = r1; r < r2; r++) {
+            for (int c = c1; c < c2; c++) {
+                if (grid[r][c] < blackThreshold) blackCount++;
+            }
+        }
+        return blackCount;
     }
 
     @Override
