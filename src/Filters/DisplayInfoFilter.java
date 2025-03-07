@@ -39,12 +39,15 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         }
         int currTimingMarkTopBound = r;
         //loop over row of bubbles within height of timing mark; for each bubble get black counts
-        ArrayList<Integer> blackAndWhiteCountsPerRow = new ArrayList<>();
+        ArrayList<Integer> blackCountsPerRow = new ArrayList<>();
         for (int currBubble = 0; currBubble < 5; currBubble++) {
-            //c1=left bound of zeroth bubble
-            //c2=right bound of 4th(last) bubble
+            //c1=left bound of zeroth bubble in first column of bubbles
+            //c2=right bound of 4th(last) bubble in first column of bubbles
             int currCount = getBlackCount(grid,currTimingMarkTopBound,105+(currBubble*25),currTimingMarkTopBound+timingMarkHeight,(105+(currBubble*25))+20);
-            blackAndWhiteCountsPerRow.add(currCount);
+            blackCountsPerRow.add(currCount);
+        }
+        for (int i = 0; i < blackCountsPerRow.size(); i++) {
+            System.out.println(blackCountsPerRow.get(i));
         }
         //222-105=117
         //each bubble 20px wide
