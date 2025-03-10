@@ -7,14 +7,12 @@ import core.DImage;
 import javax.swing.*;
 
 public class Polychrome implements PixelFilter, Interactive {
-    private int n; //total number of intervals
+    private int n = 2; //total number of intervals
     public Polychrome(){
         //String response = JOptionPane.showInputDialog("choose an n value");
         //n = Integer.parseInt( response );
-        n=2;
     }
-    @Override
-    public static DImage processImage(DImage img) {
+    public DImage processImage(DImage img) {
         if(n<1) n=1;
 
         short[][] grid = img.getBWPixelGrid();

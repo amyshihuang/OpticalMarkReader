@@ -18,6 +18,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     private int blackThreshold = 185;
     private int whiteThreshold = 240;
 
+    Polychrome polychrome = new Polychrome();
+    FixedThresholdFilter fixedThresholdFilter = new FixedThresholdFilter();
+
     public DisplayInfoFilter() {
         System.out.println("Filter running...");
     }
@@ -26,7 +29,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     public DImage processImage(DImage img) {
         short[][] grid = img.getBWPixelGrid();
 
-        img = Polychrome.processImage(img);
+        //img = polychrome.processImage(img);
+
+        img = fixedThresholdFilter.processImage(img);
 
         grid = crop(grid, 0, 0, 500, 500);
 
