@@ -26,6 +26,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     public DImage processImage(DImage img) {
         short[][] grid = img.getBWPixelGrid();
 
+        img = Polychrome.processImage(img);
+
         grid = crop(grid, 0, 0, 500, 500);
 
         System.out.println("Image is " + grid.length + " by " + grid[0].length);
