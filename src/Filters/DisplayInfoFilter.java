@@ -106,8 +106,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     }
 
     //get answer for one row (row and col start at zero)
-    public void getResult(short[][] grid, int row, int col){
-        ArrayList<Integer> blackPixelCountPerBubble = new ArrayList<>();
+    public int getResult(short[][] grid, int row, int col) {
+        ArrayList<Integer> blackPixelCounts = new ArrayList<>();
         int topBound = 40; //pixel at top of first row in first col
         int leftBound = 105; //pixel at left of first row in first col
         int rowSpacing = 28;
@@ -122,13 +122,18 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         //loop over each bubble in row and add black pixel counts to arraylist
         for (int bubble = 0; bubble < 5; bubble++) {
-            int currBubbleBlackCount = getBlackCount(grid,topBound+((bubbleSize+rowSpacing)*row), leftBound+(rowWidth*col)+(colSpacing*col), topBound+((bubbleSize+rowSpacing)*row)+bubbleSize, leftBound+(rowWidth*col)+(colSpacing*col)+rowWidth);
-            blackPixelCountPerBubble.add(currBubbleBlackCount);
+            int currBubbleBlackCount = getBlackCount(grid, topBound + ((bubbleSize + rowSpacing) * row), leftBound + (rowWidth * col) + (colSpacing * col), topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize, leftBound + (rowWidth * col) + (colSpacing * col) + rowWidth);
+            blackPixelCounts.add(currBubbleBlackCount);
         }
         //find which bubble has most black pixels
-        for (int i = 0; i < blackPixelCountPerBubble.size(); i++) {
-
+        int bubble;
+        for (bubble = 0; bubble < blackPixelCounts.size(); bubble++) {
+            int largestIndex = 0;
+            if (blackPixelCounts.get(bubble) > blackPixelCounts.get(largestIndex)) {
+                largestIndex = bubble;
+            }
         }
+        return bubble;
     }
 
     @Override
