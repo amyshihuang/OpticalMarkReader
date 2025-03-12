@@ -7,10 +7,25 @@ import core.DImage;
 import java.util.ArrayList;
 
 public class DisplayInfoFilter implements PixelFilter, Interactive {
+    // ----------------------------------------------------------------
+    // >>> sizes and distances of elements <<<
+    // size of each bubble: 20 px
+    // spacing between each bubble in same row: 5 px
+    // spacing between rows in same column: 28 px
+    // spacing between 0th and 1st col: 52 px
+    // spacing between rows in different cols: 4 px above and below
+    // ----------------------------------------------------------------
+
+    // ----------------------------------------------------------------
+    // DEPRECATED
+    /*
     private int timingMarkHeight = 20; //timing mark = each black rectangle on left side of scantron sheet
     private int timingMarkWidth = 8;
     private int timingMarkVerticalDistance; //16-30px
     private int timingMarkLeftBound = 40; //actually center of mark to account for misaligned sheets
+
+     */
+    // ----------------------------------------------------------------
 
     private int bubbleRowWidth;
     private int bubbleRowHeight;
@@ -18,7 +33,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     private int blackThreshold = 185;
     private int whiteThreshold = 240;
 
-    Polychrome polychrome = new Polychrome();
     FixedThresholdFilter fixedThresholdFilter = new FixedThresholdFilter();
 
     public DisplayInfoFilter() {
@@ -29,8 +43,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     public DImage processImage(DImage img) {
         short[][] grid = img.getBWPixelGrid();
 
-        //img = polychrome.processImage(img);
-
+        //TODO: filter not being applied
         img = fixedThresholdFilter.processImage(img);
 
         grid = crop(grid, 0, 0, 500, 500);
@@ -39,6 +52,10 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         getBlackAndWhiteCount(grid,0,0,grid.length,grid[0].length);
 
+        // ----------------------------------------------------------------
+        // DEPRECATED
+
+        /*
         //find location of first timing mark, then update timingMarkVerticalDistance accordingly
         int r = 0;
         while (grid[r][timingMarkLeftBound] >= blackThreshold) {
@@ -56,12 +73,13 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         for (int i = 0; i < blackCountsPerRow.size(); i++) {
             System.out.println(blackCountsPerRow.get(i));
         }
-        //222-105=117
-        //each bubble 20px wide
-        //gap between bubbles=5px
-        //gap between rows in same column=28px
-        //gap between right of first column and left of second column=52px
-        //gap between rows of different columns=4px top and bottom
+
+         */
+
+        // ----------------------------------------------------------------
+
+        //TODO: output inaccurate
+        System.out.println(getResult(grid, 0, 0));
 
         img.setPixels(grid);
         return img;
@@ -69,14 +87,11 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     public short[][] crop(short[][] grid, int r1, int c1, int r2, int c2) {
         short[][] grid2 = new short[r2-r1][c2-c1];
-
         for (int r = 0; r < grid2.length; r++) {
             for (int c = 0; c < grid2[r].length; c++) {
                 grid2[r][c] = grid[r1+r][c1+c];
-
             }
         }
-
         return grid2;
     }
 
@@ -105,23 +120,20 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return blackCount;
     }
 
+    //TODO: output might be inaccurate
     //get answer for one row (row and col start at zero)
     public int getResult(short[][] grid, int row, int col) {
         ArrayList<Integer> blackPixelCounts = new ArrayList<>();
+        //TODO: remove local variables and declare and initialize in class
         int topBound = 40; //pixel at top of first row in first col
         int leftBound = 105; //pixel at left of first row in first col
         int rowSpacing = 28;
         int bubbleSize = 20;
         int rowWidth = 115; //up to 118
         int colSpacing = 52;
-        //each bubble 20px wide
-        //gap between bubbles=5px
-        //gap between rows in same column=28px
-        //gap between right of first column and left of second column=52px
-        //gap between rows of different columns=4px top and bottom
-
         //loop over each bubble in row and add black pixel counts to arraylist
         for (int bubble = 0; bubble < 5; bubble++) {
+            //TODO: declare method parameters separately for clarity
             int currBubbleBlackCount = getBlackCount(grid, topBound + ((bubbleSize + rowSpacing) * row), leftBound + (rowWidth * col) + (colSpacing * col), topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize, leftBound + (rowWidth * col) + (colSpacing * col) + rowWidth);
             blackPixelCounts.add(currBubbleBlackCount);
         }
