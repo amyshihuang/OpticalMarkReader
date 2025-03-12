@@ -59,6 +59,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         //222-105=117
         //each bubble 20px wide
         //gap between bubbles=5px
+        //gap between rows in same column=28px
+        //gap between right of first column and left of second column=52px
+        //gap between rows of different columns=4px top and bottom
 
         img.setPixels(grid);
         return img;
@@ -93,12 +96,39 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     public int getBlackCount(short[][] grid, int r1, int c1, int r2, int c2){
         int blackCount = 0;
+        //r and c refer to pixels
         for (int r = r1; r < r2; r++) {
             for (int c = c1; c < c2; c++) {
                 if (grid[r][c] < blackThreshold) blackCount++;
             }
         }
         return blackCount;
+    }
+
+    //get answer for one row (row and col start at zero)
+    public void getResult(short[][] grid, int row, int col){
+        ArrayList<Integer> blackPixelCountPerBubble = new ArrayList<>();
+        int topBound = 40; //pixel at top of first row in first col
+        int leftBound = 105; //pixel at left of first row in first col
+        int rowSpacing = 28;
+        int bubbleSize = 20;
+        int rowWidth = 115; //up to 118
+        int colSpacing = 52;
+        //each bubble 20px wide
+        //gap between bubbles=5px
+        //gap between rows in same column=28px
+        //gap between right of first column and left of second column=52px
+        //gap between rows of different columns=4px top and bottom
+
+        //loop over each bubble in row and add black pixel counts to arraylist
+        for (int bubble = 0; bubble < 5; bubble++) {
+            int currBubbleBlackCount = getBlackCount(grid,topBound+((bubbleSize+rowSpacing)*row), leftBound+(rowWidth*col)+(colSpacing*col), topBound+((bubbleSize+rowSpacing)*row)+bubbleSize, leftBound+(rowWidth*col)+(colSpacing*col)+rowWidth);
+            blackPixelCountPerBubble.add(currBubbleBlackCount);
+        }
+        //find which bubble has most black pixels
+        for (int i = 0; i < blackPixelCountPerBubble.size(); i++) {
+
+        }
     }
 
     @Override
