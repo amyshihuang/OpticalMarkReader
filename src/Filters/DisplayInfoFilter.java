@@ -134,7 +134,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         int bubbleSpacing = 5;
         //loop over each bubble in row and add black pixel counts to arraylist
         for (int bubble = 0; bubble < 5; bubble++) {
-            //TODO: declare method parameters separately for clarity
+            //TODO: update variables to use bubbleSpacing
             int r1 = topBound + ((bubbleSize + rowSpacing) * row);
             int c1 = leftBound + (rowWidth * col) + (colSpacing * col);
             int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
