@@ -140,7 +140,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     //TODO: output might be inaccurate
     //get answer for one row (row and col start at zero)
     public int getResult(short[][] grid, int row, int col) {
+        //TODO: use array instead of arraylist
         ArrayList<Integer> blackPixelCounts = new ArrayList<>();
+        //int[] blackPixelCounts = new int[5];
         //TODO: initialize variables in if-statements to account for different columns
         //for left column only
         int topBound = 40; //pixel at top of first row in first col
@@ -166,6 +168,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             int currBubbleBlackCount = getBlackCount(grid, r1, c1, r2, c2);
 
             blackPixelCounts.add(currBubbleBlackCount);
+            //blackPixelCounts[bubble] = currBubbleBlackCount;
         }
         //find which bubble has most black pixels
         int i;
@@ -175,6 +178,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
                 largestIndex = i;
             }
         }
+
         return i;
     }
 
