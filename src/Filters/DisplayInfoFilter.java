@@ -30,6 +30,18 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     //TODO:
     // top and bottom edges of rows are located at midpoints of white space between timing marks
 
+    //TODO 2025-03-14:
+    // no groups that hard-coded bubble distances could read answers but those that used timing marks could (?)
+    // timing marks not perfectly aligned with rows
+    // for each row:
+    //     use convolution to blur rest of image outside the row
+    //     color masking to make row black and white so pencil and borders appear dark
+    //     in horizontal 1px line emanating from timing mark, get averages of darkness of each bubble
+    //     bubble with smallest average has more dark pixels and is answer
+    // create question object and answer object
+    // create arraylist of question objects
+    // method taking answer object as parameter, to check answers
+
     private int bubbleRowWidth;
     private int bubbleRowHeight;
 
@@ -164,9 +176,15 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return i;
     }
 
+    //print black pixel count for square area with mouse click at top left corner
     @Override
     public void mouseClicked(int mouseX, int mouseY, DImage img) {
+        int bubbleSize = 20;
+        for (int r = mouseY; r < bubbleSize; r++) {
+            for (int c = mouseX; c < bubbleSize; c++) {
 
+            }
+        }
     }
 
     @Override
