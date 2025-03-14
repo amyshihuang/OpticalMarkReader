@@ -27,6 +27,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
      */
     // ----------------------------------------------------------------
 
+    //TODO:
+    // top and bottom edges of rows are located at midpoints of white space between timing marks
+
     private int bubbleRowWidth;
     private int bubbleRowHeight;
 
@@ -78,7 +81,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         // ----------------------------------------------------------------
 
-        //TODO: output inaccurate
+        //TODO: output results in first row inaccurate
         System.out.println(getResult(grid, 0, 0));
 
         img.setPixels(grid);
@@ -124,7 +127,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     //get answer for one row (row and col start at zero)
     public int getResult(short[][] grid, int row, int col) {
         ArrayList<Integer> blackPixelCounts = new ArrayList<>();
-        //TODO: remove local variables and declare and initialize in class
+        //TODO: initialize variables in if-statements to account for different columns
+        //for left column only
         int topBound = 40; //pixel at top of first row in first col
         int leftBound = 105; //pixel at left of first row in first col
         int rowSpacing = 28;
@@ -134,11 +138,17 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         int bubbleSpacing = 5;
         //loop over each bubble in row and add black pixel counts to arraylist
         for (int bubble = 0; bubble < 5; bubble++) {
-            //TODO: update variables to use bubbleSpacing
+            /*
             int r1 = topBound + ((bubbleSize + rowSpacing) * row);
             int c1 = leftBound + (rowWidth * col) + (colSpacing * col);
             int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
             int c2 = leftBound + (rowWidth * col) + (colSpacing * col) + rowWidth;
+
+             */
+            int r1 = topBound + ((bubbleSize + rowSpacing) * row);
+            int c1 = leftBound + ((bubbleSize + bubbleSpacing) * col);
+            int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
+            int c2 = leftBound + ((bubbleSize + bubbleSpacing) * col) + bubbleSize;
             int currBubbleBlackCount = getBlackCount(grid, r1, c1, r2, c2);
 
             blackPixelCounts.add(currBubbleBlackCount);
