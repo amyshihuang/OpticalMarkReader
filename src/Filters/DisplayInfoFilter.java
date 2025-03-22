@@ -95,14 +95,15 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         // ----------------------------------------------------------------
 
-        //FIXME: only prints results for questions 1-25; also need questions 26-50
+        //FIXME: only prints results for questions 1-25 on page 1; also need questions 26-50
         //FIXME: incorrect results are given for questions that have no bubbles filled in
         System.out.println(getResult(grid));
 
         // create new grid that is a cropped portion of original grid
         short[][] grid2 = crop(grid, 0,0, 500, 500);
 
-        // set image to new cropped grid and return it
+        // set image to new cropped grid and displays it
+        // only affects what is visible, not necessarily what is being looped over
         img.setPixels(grid2);
         return img;
     }
@@ -217,7 +218,10 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             //loop over each bubble in row and add black pixel counts to arraylist
             for (int bubble = 0; bubble < 5; bubble++) {
 
-                printArr(grid, start_row, start_col, end_row, end_col);
+                //TODO: uncomment this if debugging
+                //prints values of pixels in given area
+                //printArr(grid, start_row, start_col, end_row, end_col);
+
                 // adding the black counts to an array
                 BlackCountArr.add(getBlackCount(grid, start_row, start_col, end_row, end_col)); //black count of one bubble
 
