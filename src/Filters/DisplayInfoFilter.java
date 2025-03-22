@@ -230,6 +230,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
                 end_col += bubbleSize+bubbleSpacing;
 
             }
+
+            //FIXME: incorrect results are given for questions that have no bubbles filled in
+            // consider checking differences between values of black counts
+            // if all black counts are similar, then that question probably does not have any bubbles filled in
+            // otherwise if one black count is much larger than the others, then that bubble is probably filled in
+
             // add the largest black value index into the answer array
             Answer_Array.add(max(BlackCountArr)); //index of darkest bubble in given row
 
