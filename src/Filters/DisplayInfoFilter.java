@@ -9,14 +9,6 @@ import java.util.ArrayList;
 //TODO: run this filter from FilterTest class, but eventually everything should be ran from OpticalMarkReaderMain class
 
 public class DisplayInfoFilter implements PixelFilter, Interactive {
-    // ----------------------------------------------------------------
-    // >>> sizes and distances of elements <<<
-    // size of each bubble: 20 px
-    // spacing between each bubble in same row: 5 px
-    // spacing between rows in same column: 28 px
-    // spacing between 0th and 1st col: 52 px
-    // spacing between rows in different cols: 4 px above and below
-    // ----------------------------------------------------------------
 
     // ----------------------------------------------------------------
     // DEPRECATED (?)
@@ -49,6 +41,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     private int blackThreshold = 185;
     private int whiteThreshold = 240;
+
+    private int topBound = 40; //pixel at top of first timing mark
 
     /*
     // inaccurate values
@@ -137,12 +131,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         System.out.println("If you want, you could output information to a file instead of printing it.");
     }
 
-//public int Locationofspaces(short[][] grid, int r1, int c1, int r2, int c2){
-//    for (int i = 0; i < ; i++) {
-//
-//    }
-//}
-
     public int getBlackCount(short[][] grid, int start_row, int start_col, int end_row, int end_col){
         int blackCount = 0;
         //r and c refer to pixels
@@ -178,12 +166,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return max_index;
     }
 
-    //TODO: to prevent accumulating errors from incorrect row/col distance:
+    //TODO: if the area being looped over gradually gets more and more offset due to accumulating incorrect row/col distances:
     // 1. get total pixel height of all rows, and total pixel width of all cols
     // 2. divide each by (number of bubbles*bubbleSize)
     // 3. results are the average distances between rows/cols (datatype double)
 
-    //alternative method to calculate results
+    //TODO: alternative method to calculate results (IF BUBBLES DON'T WORK)
     // instead of using the bubbles, use the timing marks
     // to get locations of starting rows for each timing mark:
     //     1. set col to be within width of timing marks
@@ -211,22 +199,18 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         // end Pixel Location
         int end_row, end_col;
 
-        int topBound = 40; //pixel at top of first row in first col
-        int leftBound = 105; //pixel at left of first row in first col
+        int leftBound = 105; //pixel at left of first row in first col; SAME AS START_COL
         int rowSpacing = 28;
         int bubbleSize = 20;
         int rowWidth = 115; //up to 118
         int colSpacing = 52; //spacing between right edge of questions 1-25, and left edge of 26-50
         int bubbleSpacing = 5;
-        // spacing between 0th and 1st col: 52 px
-        // spacing between rows in different cols (questions 1-25, vs 26-50: 4 px above and below
+        // spacing between rows in different cols (questions 1-25, vs 26-50) (eg. questions 1, 26, 2): 4 px above and below
 
         // loop of rows with the questions
         for (int question = 0; question < 25; question++) {
 
             // set the end location for the getBlackCount
-            //end_row = start_row + circleH;
-            //end_col = start_col + circleW;
             end_row = start_row + bubbleSize;
             end_col = start_col + bubbleSize;
 
@@ -238,7 +222,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
                 BlackCountArr.add(getBlackCount(grid, start_row, start_col, end_row, end_col)); //black count of one bubble
 
                 // change the start column for the next circle
-                //start_col += questionWidthDistance;
                 start_col += bubbleSize+bubbleSpacing;
                 end_col += bubbleSize+bubbleSpacing;
 
@@ -250,12 +233,11 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             BlackCountArr.clear();
 
             // Move to next question
-            //start_row += questionHightDistance;
             start_row += bubbleSize+rowSpacing;
 
             // return to initial col
             //FIXME: startcol=25 works only for questions 1-25; questions 26-50 need different startcol
-            start_col = 105; //96
+            start_col = 105;
         }
 
           /*
