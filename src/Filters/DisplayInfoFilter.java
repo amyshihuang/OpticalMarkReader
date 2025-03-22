@@ -194,8 +194,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         //TODO: consider declaring and initializing variables as constants instead of only locally in method
 
         // Start Pixel location
-        int start_row = 103; //126
-        int start_col = 105; //96
+        int start_row = 103;
+        int start_col = 105;
 
         // end Pixel Location
         int end_row, end_col;
@@ -232,9 +232,11 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             }
 
             //FIXME: incorrect results are given for questions that have no bubbles filled in
-            // consider checking differences between values of black counts
-            // if all black counts are similar, then that question probably does not have any bubbles filled in
-            // otherwise if one black count is much larger than the others, then that bubble is probably filled in
+            // 1. consider checking differences between values of black counts
+            //    if all black counts are similar, then that question probably does not have any bubbles filled in
+            //    otherwise if one black count is much larger than the others, then that bubble is probably filled in
+            // 2. OR use key item count on first page
+            // debug by clicking on top left corner of any bubble to print number of black pixels in that 20x20 region (mouseClicked method)
 
             // add the largest black value index into the answer array
             Answer_Array.add(max(BlackCountArr)); //index of darkest bubble in given row
@@ -291,12 +293,10 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     //print black pixel count for square area with mouse click at top left corner
     @Override
     public void mouseClicked(int mouseX, int mouseY, DImage img) {
+        img = fixedThresholdFilter.processImage(img);
+        short[][] grid = img.getBWPixelGrid();
         int bubbleSize = 20;
-        for (int r = mouseY; r < bubbleSize; r++) {
-            for (int c = mouseX; c < bubbleSize; c++) {
-
-            }
-        }
+        System.out.println(getBlackCount(grid,mouseY,mouseX,mouseY+bubbleSize,mouseX+bubbleSize));
     }
 
     @Override
