@@ -1,6 +1,5 @@
 import FileIO.PDFHelper;
 import Filters.DisplayInfoFilter;
-import Interfaces.PixelFilter;
 import core.DImage;
 import core.DisplayWindow;
 import processing.core.PImage;
@@ -20,16 +19,18 @@ public class FilterTest {
         // RunTheFilter();
     }
 
-    private static void RunTheFilter() {
+    //TODO: run filter on multiple pages instead of only page 1
+
+    public void RunTheFilter() {
         System.out.println("Loading pdf....");
-        PImage in = PDFHelper.getPageImage("assets/OfficialOMRSampleDoc.pdf",1);
+        PImage in = PDFHelper.getPageImage("assets/OfficialOMRSampleDoc.pdf", 1);
         DImage img = new DImage(in);       // you can make a DImage from a PImage
 
-        System.out.println("Running filter on page 1....");
+        System.out.println("Running filter on page "+ 1 +"...");
         DisplayInfoFilter filter = new DisplayInfoFilter();
         filter.processImage(img);  // if you want, you can make a different method
-                                   // that does the image processing an returns a DTO with
-                                   // the information you want
+        // that does the image processing an returns a DTO with
+        // the information you want
 
     }
 

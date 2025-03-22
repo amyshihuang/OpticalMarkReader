@@ -1,5 +1,3 @@
-//test
-
 package Filters;
 
 import Interfaces.Interactive;
@@ -7,6 +5,8 @@ import Interfaces.PixelFilter;
 import core.DImage;
 
 import java.util.ArrayList;
+
+//TODO: run this filter from FilterTest class, but eventually everything should be ran from OpticalMarkReaderMain class
 
 public class DisplayInfoFilter implements PixelFilter, Interactive {
     // ----------------------------------------------------------------
@@ -19,20 +19,20 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     // ----------------------------------------------------------------
 
     // ----------------------------------------------------------------
-    // DEPRECATED
-    /*
-    private int timingMarkHeight = 20; //timing mark = each black rectangle on left side of scantron sheet
-    private int timingMarkWidth = 8;
-    private int timingMarkVerticalDistance; //16-30px
-    private int timingMarkLeftBound = 40; //actually center of mark to account for misaligned sheets
+    // DEPRECATED (?)
+  /*
+  private int timingMarkHeight = 20; //timing mark = each black rectangle on left side of scantron sheet
+  private int timingMarkWidth = 8;
+  private int timingMarkVerticalDistance; //16-30px
+  private int timingMarkLeftBound = 40; //actually center of mark to account for misaligned sheets
 
-     */
+   */
     // ----------------------------------------------------------------
 
-    //TODO:
-    // top and bottom edges of rows are located at midpoints of white space between timing marks
+    //
+    // top and bottom edges of rows are located at midpoints of white space between timing marks// Dom
 
-    //TODO 2025-03-14:
+    //2025-03-14:
     // no groups that hard-coded bubble distances could read answers but those that used timing marks could (?)
     // timing marks not perfectly aligned with rows
     // for each row:
@@ -50,6 +50,15 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     private int blackThreshold = 185;
     private int whiteThreshold = 240;
 
+    /*
+    // inaccurate values
+    private int questionHightDistance = 50;
+    private int questionWidthDistance = 28;
+    private int circleW = 13;
+    private int circleH = 13;
+
+     */
+
     FixedThresholdFilter fixedThresholdFilter = new FixedThresholdFilter();
 
     public DisplayInfoFilter() {
@@ -58,47 +67,49 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     @Override
     public DImage processImage(DImage img) {
-        short[][] grid = img.getBWPixelGrid();
 
-        //TODO: filter not being applied
+        // apply filters before setting bw image as grid, so that effects of filters are visible
         img = fixedThresholdFilter.processImage(img);
 
-        grid = crop(grid, 0, 0, 500, 500);
+        short[][] grid = img.getBWPixelGrid();
 
-        System.out.println("Image is " + grid.length + " by " + grid[0].length);
-
-        getBlackAndWhiteCount(grid,0,0,grid.length,grid[0].length);
+        ArrayList<Integer> BlackCountArr = new ArrayList<>();
 
         // ----------------------------------------------------------------
         // DEPRECATED
 
-        /*
-        //find location of first timing mark, then update timingMarkVerticalDistance accordingly
-        int r = 0;
-        while (grid[r][timingMarkLeftBound] >= blackThreshold) {
-            r++;
-        }
-        int currTimingMarkTopBound = r;
-        //loop over row of bubbles within height of timing mark; for each bubble get black counts
-        ArrayList<Integer> blackCountsPerRow = new ArrayList<>();
-        for (int currBubble = 0; currBubble < 5; currBubble++) {
-            //c1=left bound of zeroth bubble in first column of bubbles
-            //c2=right bound of 4th(last) bubble in first column of bubbles
-            int currCount = getBlackCount(grid,currTimingMarkTopBound,105+(currBubble*25),currTimingMarkTopBound+timingMarkHeight,(105+(currBubble*25))+20);
-            blackCountsPerRow.add(currCount);
-        }
-        for (int i = 0; i < blackCountsPerRow.size(); i++) {
-            System.out.println(blackCountsPerRow.get(i));
-        }
+      /*
+      //find location of first timing mark, then update timingMarkVerticalDistance accordingly
+      int r = 0;
+      while (grid[r][timingMarkLeftBound] >= blackThreshold) {
+          r++;
+      }
+      int currTimingMarkTopBound = r;
+      //loop over row of bubbles within height of timing mark; for each bubble get black counts
+      ArrayList<Integer> blackCountsPerRow = new ArrayList<>();
+      for (int currBubble = 0; currBubble < 5; currBubble++) {
+          //c1=left bound of zeroth bubble in first column of bubbles
+          //c2=right bound of 4th(last) bubble in first column of bubbles
+          int currCount = getBlackCount(grid,currTimingMarkTopBound,105+(currBubble*25),currTimingMarkTopBound+timingMarkHeight,(105+(currBubble*25))+20);
+          blackCountsPerRow.add(currCount);
+      }
+      for (int i = 0; i < blackCountsPerRow.size(); i++) {
+          System.out.println(blackCountsPerRow.get(i));
+      }
 
-         */
+       */
 
         // ----------------------------------------------------------------
 
-        //TODO: output results in first row inaccurate
-        System.out.println(getResult(grid, 0, 0));
+        //FIXME: only prints results for questions 1-25; also need questions 26-50
+        //FIXME: incorrect results are given for questions that have no bubbles filled in
+        System.out.println(getResult(grid));
 
-        img.setPixels(grid);
+        // create new grid that is a cropped portion of original grid
+        short[][] grid2 = crop(grid, 0,0, 500, 500);
+
+        // set image to new cropped grid and return it
+        img.setPixels(grid2);
         return img;
     }
 
@@ -117,8 +128,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         int whiteCount = 0;
         for (int r = r1; r < r2; r++) {
             for (int c = c1; c < c2; c++) {
-                if (grid[r][c] < blackThreshold) blackCount++;
-                if (grid[r][c] > whiteThreshold) whiteCount++;
+                if (grid[r][c] <= blackThreshold) blackCount++;
+                if (grid[r][c] >= whiteThreshold) whiteCount++;
             }
         }
         System.out.println(blackCount + " nearly black pixels and " + whiteCount + " nearly white pixels");
@@ -126,60 +137,163 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         System.out.println("If you want, you could output information to a file instead of printing it.");
     }
 
-    public int getBlackCount(short[][] grid, int r1, int c1, int r2, int c2){
+//public int Locationofspaces(short[][] grid, int r1, int c1, int r2, int c2){
+//    for (int i = 0; i < ; i++) {
+//
+//    }
+//}
+
+    public int getBlackCount(short[][] grid, int start_row, int start_col, int end_row, int end_col){
         int blackCount = 0;
         //r and c refer to pixels
-        for (int r = r1; r < r2; r++) {
-            for (int c = c1; c < c2; c++) {
-                if (grid[r][c] < blackThreshold) blackCount++;
+        for (int r = start_row; r < end_row; r++) {
+            for (int c = start_col; c < end_col; c++) {
+                if (grid[r][c] <= blackThreshold) blackCount++;
             }
         }
         return blackCount;
     }
 
-    //TODO: output might be inaccurate
-    //get answer for one row (row and col start at zero)
-    public int getResult(short[][] grid, int row, int col) {
-        //TODO: use array instead of arraylist
-        ArrayList<Integer> blackPixelCounts = new ArrayList<>();
-        //int[] blackPixelCounts = new int[5];
-        //TODO: initialize variables in if-statements to account for different columns
-        //for left column only
+    public int getWhiteCount(short[][] grid, int start_row, int start_col, int end_row, int end_col){
+        int whiteCount = 0;
+        //r and c refer to pixels
+        for (int r = start_row; r < end_row; r++) {
+            for (int c = start_col; c < end_col; c++) {
+                if (grid[r][c] >= whiteThreshold) whiteCount++;
+            }
+        }
+        return whiteCount;
+    }
+
+    //Return index with the largest value in array
+    int max(ArrayList<Integer> array){
+        int max = array.get(0);
+        int max_index = 0;
+        for (int i = 1; i < array.size(); i++) {
+            if(array.get(i) > max){
+                max = array.get(i);
+                max_index= i;
+            }
+        }
+        return max_index;
+    }
+
+    //TODO: to prevent accumulating errors from incorrect row/col distance:
+    // 1. get total pixel height of all rows, and total pixel width of all cols
+    // 2. divide each by (number of bubbles*bubbleSize)
+    // 3. results are the average distances between rows/cols (datatype double)
+
+    //alternative method to calculate results
+    // instead of using the bubbles, use the timing marks
+    // to get locations of starting rows for each timing mark:
+    //     1. set col to be within width of timing marks
+    //     2. go down rows until there is a white pixel followed by a dark pixel
+    //     3. row you stopped at is the row of the top edge of the timing mark
+    //     4. add that row to an arraylist of top edges
+    //     5. repeat 2-4 so that you looped over all the timing marks and have an arraylist of the row numbers corresponding to all their top edges
+
+    //FIXME: only prints results for questions 1-25; also need questions 26-50
+    //FIXME: incorrect results are given for questions that have no bubbles filled in
+
+    public ArrayList<Integer> getResult(short[][] grid) {
+        // Array to keep track of Black count for each question in a row
+        ArrayList<Integer> BlackCountArr = new ArrayList<>();
+
+        // questions with the largest Black count per row
+        ArrayList<Integer> Answer_Array = new ArrayList<>();
+
+        //TODO: consider declaring and initializing variables as constants instead of only locally in method
+
+        // Start Pixel location
+        int start_row = 103; //126
+        int start_col = 105; //96
+
+        // end Pixel Location
+        int end_row, end_col;
+
         int topBound = 40; //pixel at top of first row in first col
         int leftBound = 105; //pixel at left of first row in first col
         int rowSpacing = 28;
         int bubbleSize = 20;
         int rowWidth = 115; //up to 118
-        int colSpacing = 52;
+        int colSpacing = 52; //spacing between right edge of questions 1-25, and left edge of 26-50
         int bubbleSpacing = 5;
-        //loop over each bubble in row and add black pixel counts to arraylist
-        for (int bubble = 0; bubble < 5; bubble++) {
-            /*
-            int r1 = topBound + ((bubbleSize + rowSpacing) * row);
-            int c1 = leftBound + (rowWidth * col) + (colSpacing * col);
-            int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
-            int c2 = leftBound + (rowWidth * col) + (colSpacing * col) + rowWidth;
+        // spacing between 0th and 1st col: 52 px
+        // spacing between rows in different cols (questions 1-25, vs 26-50: 4 px above and below
 
-             */
-            int r1 = topBound + ((bubbleSize + rowSpacing) * row);
-            int c1 = leftBound + ((bubbleSize + bubbleSpacing) * col);
-            int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
-            int c2 = leftBound + ((bubbleSize + bubbleSpacing) * col) + bubbleSize;
-            int currBubbleBlackCount = getBlackCount(grid, r1, c1, r2, c2);
+        // loop of rows with the questions
+        for (int question = 0; question < 25; question++) {
 
-            blackPixelCounts.add(currBubbleBlackCount);
-            //blackPixelCounts[bubble] = currBubbleBlackCount;
-        }
-        //find which bubble has most black pixels
-        int i;
-        for (i = 0; i < blackPixelCounts.size(); i++) {
-            int largestIndex = 0;
-            if (blackPixelCounts.get(i) > blackPixelCounts.get(largestIndex)) {
-                largestIndex = i;
+            // set the end location for the getBlackCount
+            //end_row = start_row + circleH;
+            //end_col = start_col + circleW;
+            end_row = start_row + bubbleSize;
+            end_col = start_col + bubbleSize;
+
+            //loop over each bubble in row and add black pixel counts to arraylist
+            for (int bubble = 0; bubble < 5; bubble++) {
+
+                printArr(grid, start_row, start_col, end_row, end_col);
+                // adding the black counts to an array
+                BlackCountArr.add(getBlackCount(grid, start_row, start_col, end_row, end_col)); //black count of one bubble
+
+                // change the start column for the next circle
+                //start_col += questionWidthDistance;
+                start_col += bubbleSize+bubbleSpacing;
+                end_col += bubbleSize+bubbleSpacing;
+
             }
+            // add the largest black value index into the answer array
+            Answer_Array.add(max(BlackCountArr)); //index of darkest bubble in given row
+
+            // clear previous black values
+            BlackCountArr.clear();
+
+            // Move to next question
+            //start_row += questionHightDistance;
+            start_row += bubbleSize+rowSpacing;
+
+            // return to initial col
+            //FIXME: startcol=25 works only for questions 1-25; questions 26-50 need different startcol
+            start_col = 105; //96
         }
 
-        return i;
+          /*
+          // DEPRECATED
+
+          int r1 = topBound + ((bubbleSize + rowSpacing) * row);
+          int c1 = leftBound + (rowWidth * col) + (colSpacing * col);
+          int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
+          int c2 = leftBound + (rowWidth * col) + (colSpacing * col) + rowWidth;
+
+
+           int r1 = topBound + ((bubbleSize + rowSpacing) * row);
+           int c1 = leftBound + ((bubbleSize + bubbleSpacing) * col);
+           int r2 = topBound + ((bubbleSize + rowSpacing) * row) + bubbleSize;
+           int c2 = leftBound + ((bubbleSize + bubbleSpacing) * col) + bubbleSize;
+           int currBubbleBlackCount = getBlackCount(grid, r1, c1, r2, c2);
+
+
+           blackPixelCounts.add(currBubbleBlackCount);
+       find which bubble has most black pixels
+       int i;
+       for (i = 0; i < blackPixelCounts.size(); i++) {
+           int largestIndex = 0;
+           if (blackPixelCounts.get(i) > blackPixelCounts.get(largestIndex)) {
+               largestIndex = i;
+           }
+       }
+       */
+        return Answer_Array;
+    }
+
+    private void printArr(short[][] grid, int startRow, int startCol, int endRow, int endCol) {
+        for (int r = startRow; r < endRow; r++) {
+            for (int c = startCol; c < endCol; c++) {
+                System.out.print(grid[r][c] + " ");
+            }
+            System.out.println();
+        }
     }
 
     //print black pixel count for square area with mouse click at top left corner
@@ -198,4 +312,3 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     }
 }
-

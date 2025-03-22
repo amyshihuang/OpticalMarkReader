@@ -1,13 +1,14 @@
 package Filters;
 
+import Interfaces.Interactive;
 import Interfaces.PixelFilter;
 import core.DImage;
 
-public class FixedThresholdFilter implements PixelFilter {
+public class FixedThresholdFilter implements PixelFilter, Interactive {
     private int threshold;
 
     public FixedThresholdFilter() {
-        threshold = 127;
+        threshold = 185;
     }
 
     @Override
@@ -26,6 +27,17 @@ public class FixedThresholdFilter implements PixelFilter {
 
         img.setPixels(grid);
         return img;
+    }
+
+    @Override
+    public void mouseClicked(int mouseX, int mouseY, DImage img) {
+
+    }
+
+    @Override
+    public void keyPressed(char key) {
+        if(key=='+') threshold++;
+        if(key=='-') threshold--;
     }
 }
 
