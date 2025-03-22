@@ -238,7 +238,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             // 2. OR use key item count on first page
             // debug by clicking on top left corner of any bubble to print number of black pixels in that 20x20 region (mouseClicked method)
 
-            //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in)
+            //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in, didn't fill in bubble completely, etc)
 
             // add the largest black value index into the answer array
             Answer_Array.add(max(BlackCountArr)); //index of darkest bubble in given row
