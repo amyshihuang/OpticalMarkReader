@@ -19,8 +19,6 @@ public class FilterTest {
         // RunTheFilter();
     }
 
-    //TODO: run filter on multiple pages instead of only page 1
-
     public void RunTheFilter() {
         System.out.println("Loading pdf....");
         PImage in = PDFHelper.getPageImage("assets/OfficialOMRSampleDoc.pdf", 1);

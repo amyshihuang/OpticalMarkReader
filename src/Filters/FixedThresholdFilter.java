@@ -36,8 +36,12 @@ public class FixedThresholdFilter implements PixelFilter, Interactive {
 
     @Override
     public void keyPressed(char key) {
-        if(key=='+') threshold++;
-        if(key=='-') threshold--;
+        if(key=='+' && threshold<255){
+            threshold++;
+        }
+        if(key=='-' && threshold>0){
+            threshold--;
+        }
     }
 }
 

@@ -108,6 +108,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return img;
     }
 
+    //crop grid to specified region
     public short[][] crop(short[][] grid, int r1, int c1, int r2, int c2) {
         short[][] grid2 = new short[r2-r1][c2-c1];
         for (int r = 0; r < grid2.length; r++) {
@@ -118,6 +119,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return grid2;
     }
 
+    //print numbers of black and white pixels in specified region of grid
     public void getBlackAndWhiteCount(short[][] grid, int r1, int c1, int r2, int c2){
         int blackCount = 0;
         int whiteCount = 0;
@@ -132,6 +134,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         System.out.println("If you want, you could output information to a file instead of printing it.");
     }
 
+    //get number of black pixels within specified region of grid
     public int getBlackCount(short[][] grid, int start_row, int start_col, int end_row, int end_col){
         int blackCount = 0;
         //r and c refer to pixels
@@ -143,6 +146,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return blackCount;
     }
 
+    //get number of white pixels within specified region of grid
     public int getWhiteCount(short[][] grid, int start_row, int start_col, int end_row, int end_col){
         int whiteCount = 0;
         //r and c refer to pixels
@@ -167,12 +171,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return max_index;
     }
 
-    //TODO: if the area being looped over gradually gets more and more offset due to accumulating incorrect row/col distances:
+    //if the area being looped over gradually gets more and more offset due to accumulating incorrect row/col distances:
     // 1. get total pixel height of all rows, and total pixel width of all cols
     // 2. divide each by (number of bubbles*bubbleSize)
     // 3. results are the average distances between rows/cols (datatype double)
 
-    //TODO: alternative method to calculate results (IF BUBBLES DON'T WORK)
+    //alternative method to calculate results (IF BUBBLES DON'T WORK)
     // instead of using the bubbles, use the timing marks
     // to get locations of starting rows for each timing mark:
     //     1. set col to be within width of timing marks
@@ -191,7 +195,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         // questions with the largest Black count per row
         ArrayList<Integer> Answer_Array = new ArrayList<>();
 
-        //TODO: consider declaring and initializing variables as constants instead of only locally in method
+        //consider declaring and initializing variables as constants instead of only locally in method
 
         // Start Pixel location
         int start_row = 103;
@@ -218,7 +222,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             //loop over each bubble in row and add black pixel counts to arraylist
             for (int bubble = 0; bubble < 5; bubble++) {
 
-                //TODO: uncomment this if debugging
+                //TODO: uncomment this if debugging; otherwise delete
                 //prints values of pixels in given area
                 //printArr(grid, start_row, start_col, end_row, end_col);
 
@@ -283,6 +287,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return Answer_Array;
     }
 
+    //print contents of grid within specified area
     private void printArr(short[][] grid, int startRow, int startCol, int endRow, int endCol) {
         for (int r = startRow; r < endRow; r++) {
             for (int c = startCol; c < endCol; c++) {
@@ -303,6 +308,5 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
     @Override
     public void keyPressed(char key) {
-
     }
 }
