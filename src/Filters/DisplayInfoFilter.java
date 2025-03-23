@@ -253,6 +253,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in, didn't fill in bubble completely, etc)
 
             /*
+            //INACCURATE RESULTS
             //check if maximum black value in black count array is above threshold for filled bubbles (ie. if max val is dark enough)
             if(BlackCountArr.get(maxIndex(BlackCountArr))>bubbleFilledThreshold){
                 // add the largest black value index into the answer array
