@@ -212,6 +212,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         int bubbleSpacing = 5;
         // spacing between rows in different cols (questions 1-25, vs 26-50) (eg. questions 1, 26, 2): 4 px above and below
 
+        //FIXME: loop over questions 26-50 and use different start row and start col accordingly
         // loop of rows with the questions
         for (int question = 0; question < 25; question++) {
 
@@ -254,7 +255,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
             start_row += bubbleSize+rowSpacing;
 
             // return to initial col
-            //FIXME: startcol=25 works only for questions 1-25; questions 26-50 need different startcol
             start_col = 105;
         }
 
