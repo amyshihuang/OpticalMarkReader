@@ -159,7 +159,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     }
 
     //Return index with the largest value in array
-    int max(ArrayList<Integer> array){
+    int maxIndex(ArrayList<Integer> array){
         int max = array.get(0);
         int max_index = 0;
         for (int i = 1; i < array.size(); i++) {
@@ -170,6 +170,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         }
         return max_index;
     }
+
 
     //if the area being looped over gradually gets more and more offset due to accumulating incorrect row/col distances:
     // 1. get total pixel height of all rows, and total pixel width of all cols
@@ -212,7 +213,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         int bubbleSpacing = 5;
         // spacing between rows in different cols (questions 1-25, vs 26-50) (eg. questions 1, 26, 2): 4 px above and below
 
+        //TODO: thresholds might be inaccurate for different pages
+        int bubbleFilledThreshold = 150; //in square region that is bubbleSize, minimum number of black pixels for region to be considered as a filled-in bubble
+        int bubbleExistsThreshold = 100; //in square region that is bubbleSize, minimum number of black pixels for region to be considered an empty bubble; IF LESS THAN, THEN THERE IS NO BUBBLE AT ALL
+
         //FIXME: loop over questions 26-50 and use different start row and start col accordingly
+
         // loop of rows with the questions
         for (int question = 0; question < 25; question++) {
 
@@ -238,15 +244,28 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
             //FIXME: incorrect results are given for questions that have no bubbles filled in
             // 1. consider checking differences between values of black counts
-            //    if all black counts are similar, then that question probably does not have any bubbles filled in
-            //    otherwise if one black count is much larger than the others, then that bubble is probably filled in
+            //    if all black counts are similar(ly low), then that question probably does not have any bubbles filled in (UNLESS ALL 5 BUBBLES ARE FILLED)
+            //    if one black count is much larger than the others, then that bubble is probably filled in
+            //    if 2+ but less than 5 black counts are larger than others, then probably multiple bubbles are filled in (unexpected entry)
             // 2. OR use key item count on first page
             // debug by clicking on top left corner of any bubble to print number of black pixels in that 20x20 region (mouseClicked method)
 
             //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in, didn't fill in bubble completely, etc)
 
+            /*
+            //check if maximum black value in black count array is above threshold for filled bubbles (ie. if max val is dark enough)
+            if(BlackCountArr.get(maxIndex(BlackCountArr))>bubbleFilledThreshold){
+                // add the largest black value index into the answer array
+                Answer_Array.add(maxIndex(BlackCountArr)); //index of darkest bubble in given row
+            }
+            else{ //if no properly-filled-in bubble exists in black count array
+                Answer_Array.add(-1); // add -1 to answer array
+            }
+
+             */
+
             // add the largest black value index into the answer array
-            Answer_Array.add(max(BlackCountArr)); //index of darkest bubble in given row
+            Answer_Array.add(maxIndex(BlackCountArr)); //index of darkest bubble in given row
 
             // clear previous black values
             BlackCountArr.clear();
