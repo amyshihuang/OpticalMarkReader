@@ -252,6 +252,12 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
             //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in, didn't fill in bubble completely, etc)
 
+
+            //TODO: 2025-03-24 key item count
+            // loop over hundreds, tens, ones places
+            // for each place value find start row, start col, bubble distance
+            // obtain value for each place value then multiply by 100,10,1 and combine to get number of questions
+
             /*
             //INACCURATE RESULTS
             //check if maximum black value in black count array is above threshold for filled bubbles (ie. if max val is dark enough)
