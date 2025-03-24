@@ -199,8 +199,8 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         //consider declaring and initializing variables as constants instead of only locally in method
 
         // Start Pixel location
-        int start_row = 103;
-        int start_col = 105;
+        int start_row = 110; //134 for col 2
+        int start_col = 103; //272 for col 2
 
         // end Pixel Location
         int end_row, end_col;
