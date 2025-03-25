@@ -37,8 +37,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         // set image to new cropped grid and displays it
         // only affects what is visible, not necessarily what is being looped over
         img.setPixels(grid2);
-
-        img.setPixels(grid);
         return img;
     }
 
