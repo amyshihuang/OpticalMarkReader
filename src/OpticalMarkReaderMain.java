@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class OpticalMarkReaderMain {
     public static int numQuestions;
 
-    //TODO: should these be constants?
     static DisplayInfoFilter filter = new DisplayInfoFilter(); // create DisplayInfoFilter object
     static ArrayList<PImage> in = new ArrayList<>();
 
@@ -35,20 +34,24 @@ public class OpticalMarkReaderMain {
          "you must also output an item analysis file which says, for each test question, the total number of students who got it wrong in the batch of images you processed."
          */
 
-        //TODO: 2025-03-22
-        // create a string for the results (compare answers on pages 2+ to those on the first page which is the answer key)
-        // add each result to the string using StringBuilder (more info in file reading and writing doc)
-
-        StringBuilder scores = new StringBuilder();
-        StringBuilder colHeaders = new StringBuilder("page, # right, ");
+        StringBuilder scoresData = new StringBuilder();
+        StringBuilder scoreHeaders = new StringBuilder("page, # right");
 
         in = PDFHelper.getPImagesFromPdf(pathToPdf); // create arraylist of PImages from each page of pdf
 
-        //TODO: investigate
         filter.numQuestions = filter.getNumQuestions(new DImage(in.get(0))); // get number of questions from first page of pdf
         numQuestions = filter.numQuestions;
 
         DImage img0 = new DImage(in.get(0));
+
+        for (int i = 0; i < numQuestions; i++) {
+            //append question numbers to col header string builder
+            scoreHeaders.append(", q").append(i+1);
+        }
+
+        //TODO: replace with csv
+        System.out.println(scoreHeaders);
+        scoresData.append(scoreHeaders);
 
         // loop over each page in arraylist of PImages
         for (int i = 0; i < in.size(); i++) {
@@ -57,30 +60,19 @@ public class OpticalMarkReaderMain {
             //filter.getResult(img); // process current DImage
             System.out.println(filter.getResult(img)); // process current DImage
 
-            //append question numbers to col header string builder
-            colHeaders.append(", q").append(i+1);
-
             StringBuilder currAnswers = new StringBuilder();
             StringBuilder currLine = new StringBuilder();
 
+            //TODO: replace with csv
             //TODO: make this a method
-
-            //getScores(i,img);
-
+            System.out.println(getPageScores(i,img));
+            scoresData.append("\n").append(getPageScores(i,img));
 
             //scores.append(filter.getResult(img));
         }
-        /*
-        //for-each loop (can use if not printing page numbers)
-        for(PImage PImg : in){
-            DImage img = new DImage(PImg);       // you can make a DImage from a PImage
-            DisplayInfoFilter filter = new DisplayInfoFilter();
-            filter.processImage(img);
-        }
-         */
 
         //TODO: obtain correct data before writing them to files
-        //writeDataToFile("scores.txt", "This is the contents of the file!");
+        writeDataToFile("scores.txt", String.valueOf(scoresData));
         //writeDataToFile("itemAnalysis.txt","contents");
 
         //use if want to read files
@@ -89,8 +81,8 @@ public class OpticalMarkReaderMain {
 
     }
 
-    //TODO: in progress
-    public static void getScores(int pageIndex, DImage img) {
+    //get scores for specified page
+    public static StringBuilder getPageScores(int pageIndex, DImage img) {
         StringBuilder pageScores = new StringBuilder(); //line for curr page with page num, num right, right/wrong etc.
         pageScores.append(pageIndex+1).append(", "); // append curr page num
         if(pageIndex==0){
@@ -102,20 +94,38 @@ public class OpticalMarkReaderMain {
             }
         }
         else{
+            int numCorrect = 0;
+            //array for whether answers are right or wrong
+            ArrayList<String> answerCorrectness = new ArrayList<>();
             //loop over each answer in answer array
             for (int qIndex = 0; qIndex < numQuestions; qIndex++) {
                 //append curr answer to pageScores string builder
                 //if current answer in curr image == curr answer in first page
                 if(filter.getResult(img).get(qIndex) == filter.getResult(new DImage(in.get(0))).get(qIndex)){
-                    pageScores.append(", ").append("right");
+                    //pageScores.append(", ").append("right");
+                    numCorrect++;
+                    answerCorrectness.add("right");
                 }
                 else{
-                    pageScores.append(", ").append("wrong");
+                    //pageScores.append(", ").append("wrong");
+                    answerCorrectness.add("wrong");
                 }
-
+            }
+            pageScores.append(numCorrect);
+            //loop over arraylist of answer correctness (right/wrong) and append each to string builder
+            for (int ansCorrIndex = 0; ansCorrIndex < answerCorrectness.size(); ansCorrIndex++) {
+                pageScores.append(", ").append(answerCorrectness.get(ansCorrIndex));
             }
         }
+        return pageScores;
     }
+
+    /*
+    public static StringBuilder createScoresCSV(){
+
+    }
+
+     */
 
     private static String fileChooser() {
         String userDirLocation = System.getProperty("user.dir");
