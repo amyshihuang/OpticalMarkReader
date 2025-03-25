@@ -24,15 +24,22 @@ public class OpticalMarkReaderMain {
         (1).  Load the pdf
         (2).  Loop over its pages
         (3).  Create a DImage from each page and process its pixels
-        TODO: (4).  Output 2 csv files
+        (4).  Output 2 csv files
          "First, a scores file that says, for each test, which questions were right and wrong, as well as the overall total correct."
          "For example:
          page, # right, q1, q2, q3, q4, q5, q6, q7, q8, …
          1, 12, right, right, right, right right, right right, ….
          2, 10, right, wrong, right, right, right, wrong, ….
          3, 2, wrong, wrong, wrong, wrong, right, …."
-         "you must also output an item analysis file which says, for each test question, the total number of students who got it wrong in the batch of images you processed."
+         TODO: "you must also output an item analysis file which says,
+          for each test question, the total number of students who got it wrong in the batch of images you processed."
          */
+
+        //TODO: item analysis csv
+        // get numQuestions,
+        // create arrayList of question objects (?)
+        // for each question loop over num pages, increment counter for either right/wrong students
+        // add/subtract from numQuestions
 
         StringBuilder scoresData = new StringBuilder();
         StringBuilder scoreHeaders = new StringBuilder("page, # right");
@@ -42,6 +49,7 @@ public class OpticalMarkReaderMain {
         filter.numQuestions = filter.getNumQuestions(new DImage(in.get(0))); // get number of questions from first page of pdf
         numQuestions = filter.numQuestions;
 
+        //TODO: make constant, then in getPageScores() can use this instead of creating new dimage of first page every page
         DImage img0 = new DImage(in.get(0));
 
         for (int i = 0; i < numQuestions; i++) {
