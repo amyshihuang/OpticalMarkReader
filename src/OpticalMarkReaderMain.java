@@ -41,8 +41,12 @@ public class OpticalMarkReaderMain {
         // for each question loop over num pages, increment counter for either right/wrong students
         // add/subtract from numQuestions
 
+        //TODO: append headers in methods?
         StringBuilder scoresData = new StringBuilder();
         StringBuilder scoreHeaders = new StringBuilder("page, # right");
+
+        StringBuilder itemAnalysisData = new StringBuilder();
+        StringBuilder itemAnalysisHeaders = new StringBuilder("question, # wrong");
 
         in = PDFHelper.getPImagesFromPdf(pathToPdf); // create arraylist of PImages from each page of pdf
 
@@ -58,8 +62,10 @@ public class OpticalMarkReaderMain {
         }
 
         //TODO: replace with csv
-        System.out.println(scoreHeaders);
+        //System.out.println(scoreHeaders);
         scoresData.append(scoreHeaders);
+
+        itemAnalysisData.append(itemAnalysisHeaders);
 
         // loop over each page in arraylist of PImages
         for (int i = 0; i < in.size(); i++) {
@@ -73,15 +79,17 @@ public class OpticalMarkReaderMain {
 
             //TODO: replace with csv
             //TODO: make this a method
-            System.out.println(getPageScores(i,img));
+            //System.out.println(getPageScores(i,img));
             scoresData.append("\n").append(getPageScores(i,img));
 
             //scores.append(filter.getResult(img));
         }
 
-        //TODO: obtain correct data before writing them to files
+        //System.out.println(getItemAnalysis(in));
+        itemAnalysisData.append("\n").append(getItemAnalysis(in));
+
         writeDataToFile("scores.txt", String.valueOf(scoresData));
-        //writeDataToFile("itemAnalysis.txt","contents");
+        writeDataToFile("itemAnalysis.txt", String.valueOf(itemAnalysisData));
 
         //use if want to read files
         //String data = readFile("myFile.txt");
@@ -134,6 +142,30 @@ public class OpticalMarkReaderMain {
     }
 
      */
+
+    public static StringBuilder getItemAnalysis(ArrayList<PImage> in){
+        StringBuilder questionHowManyMissed = new StringBuilder();
+        ArrayList<ArrayList<Integer>> resultsList = new ArrayList<>();
+        //loop over each page
+        for (int i = 0; i < in.size(); i++) {
+            DImage img = new DImage(in.get(i)); // create DImage from current PImage
+            resultsList.add(filter.getResult(img)); //add results of curr page to arraylist of results
+        }
+        //loop over each question
+        for (int qIndex = 0; qIndex < numQuestions; qIndex++) {
+            int currHowManyMissed = 0;
+            questionHowManyMissed.append(qIndex+1);
+            //loop over each page after first page
+            for (int page = 1; page < in.size(); page++) {
+                //check if curr result in curr page is wrong
+                if(resultsList.get(page).get(qIndex) != resultsList.get(0).get(qIndex)){
+                    currHowManyMissed++;
+                }
+            }
+            questionHowManyMissed.append(", ").append(currHowManyMissed).append("\n");
+        }
+        return questionHowManyMissed;
+    }
 
     private static String fileChooser() {
         String userDirLocation = System.getProperty("user.dir");
