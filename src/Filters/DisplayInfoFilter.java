@@ -8,10 +8,9 @@ import java.util.ArrayList;
 
 public class DisplayInfoFilter implements PixelFilter, Interactive {
 
-    private int blackThreshold = 185;
-    private int whiteThreshold = 240;
-    private int bubbleSize = 20;
-    public int numQuestions;
+    private int blackThreshold = 185; //grayscale pixel value threshold to set pixel to be black
+    private int whiteThreshold = 240; //grayscale pixel value threshold to set pixel to be white
+    public int numQuestions; //total number of questions on test
 
     FixedThresholdFilter fixedThresholdFilter = new FixedThresholdFilter();
 
@@ -26,8 +25,6 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         img = fixedThresholdFilter.processImage(img);
 
         short[][] grid = img.getBWPixelGrid();
-
-        //numQuestions = getNumQuestions(img);
 
         System.out.println(getResult(img));
 
@@ -91,7 +88,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
     }
 
     //Return index with the largest value in array
-    int maxIndex(ArrayList<Integer> array){
+    int getMaxIndex(ArrayList<Integer> array){
         int max = array.get(0);
         int max_index = 0;
         for (int i = 1; i < array.size(); i++) {
@@ -109,21 +106,25 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         short[][] grid = img.getBWPixelGrid();
 
-        int bubbleSpacingKeyAns = 4; //horz and vert
-        int startRowKeyAns = 327;
+        int bubbleSizeKeyAns = 20;
+        int bubbleSpacingKeyAns = 4; //horizontal and vertical spacing between bubbles
+        int startRowKeyAns = 327; //starting pixel positions for each place value
         int startColHundreds = 442;
         int startColTens = 466;
         int startColOnes = 490;
-        int hundreds;
+        int hundredsNumBubbles = 2;
+        int tensNumBubbles = 10;
+        int onesNumBubbles = 10;
+        int hundreds; //place values
         int tens;
         int ones;
         ArrayList<Integer> keyItemBlackCounts = new ArrayList<>();
 
-        hundreds = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColHundreds,bubbleSize,bubbleSpacingKeyAns,2);
+        hundreds = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColHundreds,bubbleSizeKeyAns,bubbleSpacingKeyAns,hundredsNumBubbles);
         keyItemBlackCounts.clear();
-        tens = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColTens,bubbleSize,bubbleSpacingKeyAns,10);
+        tens = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColTens,bubbleSizeKeyAns,bubbleSpacingKeyAns,tensNumBubbles);
         keyItemBlackCounts.clear();
-        ones = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColOnes,bubbleSize,bubbleSpacingKeyAns,10);
+        ones = getColResult(grid,keyItemBlackCounts,startRowKeyAns,startColOnes,bubbleSizeKeyAns,bubbleSpacingKeyAns,onesNumBubbles);
         keyItemBlackCounts.clear();
 
         return (100*hundreds)+(10*tens)+ones;
@@ -142,32 +143,30 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         ArrayList<Integer> Answer_Array = new ArrayList<>();
 
         // Start Pixel location
-        int start_row = 110; //134 for col 2
-        int start_col = 103; //272 for col 2
+        int start_row = 110;
+        int start_col = 103;
 
-        // end Pixel Location
-        int end_row, end_col;
-
-        int leftBound = 105; //pixel at left of first row in first col; SAME AS START_COL
         int rowSpacing = 28;
         int bubbleSize = 20;
-        int rowWidth = 115; //up to 118
-        int colSpacing = 52; //spacing between right edge of questions 1-25, and left edge of 26-50
         int bubbleSpacing = 5;
-        // spacing between rows in different cols (questions 1-25, vs 26-50) (eg. questions 1, 26, 2): 4 px above and below
-
-        //TODO: uncomment if debugging; otherwise delete
-        //System.out.println("number of questions: "+ numQuestions);
+        int numBubbles = 5; //number of bubbles per question
 
         //TODO: need to handle unexpected student entry situations (eg. questions with multiple bubbles filled in, didn't fill in bubble completely, etc)
 
-        //TODO: make this a method?
+        /*
+        TODO: for each question compare differences between black counts
+         create variable for difference
+         OR compare each black count to another, if 2+ are similar then unexpected entry exists
+
+         */
+
 
         // loop of rows with the questions
         for (int question = 0; question < numQuestions; question++) {
             if(numQuestions<=25){
+
                 // add the largest black value index into the answer array
-                Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,5));
+                Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,numBubbles));
 
                 // clear previous black values
                 BlackCountArr.clear();
@@ -177,11 +176,17 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
                 // return to initial col
                 start_col = 103;
+
+
+
+                //getQuestionResults(grid,Answer_Array,BlackCountArr,start_row,start_col,rowSpacing,bubbleSize,bubbleSpacing,numBubbles);
+
             }
             else{
-                for (int i = 0; i < 25; i++) {
+                for (int q = 0; q < 25; q++) {
+
                     // add the largest black value index into the answer array
-                    Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,5));
+                    Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,numBubbles));
 
                     // clear previous black values
                     BlackCountArr.clear();
@@ -191,15 +196,21 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
                     // return to initial col
                     start_col = 103;
+
+
+
+                    //getQuestionResults(grid,Answer_Array,BlackCountArr,start_row,start_col,rowSpacing,bubbleSize,bubbleSpacing,numBubbles);
+
                 }
 
                 //set start row and start col for second column of questions (q26-50)
                 start_row = 134;
                 start_col = 272;
 
-                for (int i = 25; i < numQuestions; i++) {
+                for (int q = 25; q < numQuestions; q++) {
+
                     // add the largest black value index into the answer array
-                    Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,5));
+                    Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,numBubbles));
 
                     // clear previous black values
                     BlackCountArr.clear();
@@ -209,6 +220,11 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
                     // return to initial col
                     start_col = 272;
+
+
+
+                    //getQuestionResults(grid,Answer_Array,BlackCountArr,start_row,start_col,rowSpacing,bubbleSize,bubbleSpacing,numBubbles);
+
                 }
             }
 
@@ -217,28 +233,24 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         return Answer_Array;
     }
 
-    /*
-    //get answers for questions in one column
-    public void getQuestionResults(int numQuestions, short[][] grid, ArrayList<Integer> Answer_Array, ArrayList<Integer> BlackCountArr, int start_row, int start_col, int bubbleSize, int bubbleSpacing, int numBubbles){
-        // loop of rows with the questions
-        for (int question = 0; question < numQuestions; question++) {
+    //INCORRECT RESULTS
+    //get results for specified range of questions
+    public void getQuestionResults(short[][] grid, ArrayList<Integer> Answer_Array, ArrayList<Integer> BlackCountArr, int start_row, int start_col, int rowSpacing, int bubbleSize, int bubbleSpacing, int numBubbles){
+        int initialStartCol = start_col;
 
-            // add the largest black value index into the answer array
-            Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,5));
+        // add the largest black value index into the answer array
+        Answer_Array.add(getRowResult(grid,BlackCountArr,start_row,start_col,bubbleSize,bubbleSpacing,numBubbles));
 
-            // clear previous black values
-            BlackCountArr.clear();
+        // clear previous black values
+        BlackCountArr.clear();
 
-            // Move to next question
-            start_row += bubbleSize+rowSpacing;
+        // Move to next question
+        start_row += bubbleSize+rowSpacing;
 
-            // return to initial col
-            start_col = 105;
+        // return to initial col
+        start_col = initialStartCol;
 
-        }
     }
-
-     */
 
     //get answer for given row
     public int getRowResult(short[][] grid, ArrayList<Integer> BlackCountArr, int start_row, int start_col, int bubbleSize, int bubbleSpacing, int numBubbles){
@@ -258,7 +270,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         }
 
-        return maxIndex(BlackCountArr); //index of darkest bubble in given row
+        return getMaxIndex(BlackCountArr); //index of darkest bubble in given row
     }
 
     //get result for given column (for key answer count)
@@ -279,7 +291,7 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
 
         }
 
-        return maxIndex(BlackCountArr); //index of darkest bubble in given row
+        return getMaxIndex(BlackCountArr); //index of darkest bubble in given col
     }
 
     //print contents of grid within specified area
@@ -292,9 +304,9 @@ public class DisplayInfoFilter implements PixelFilter, Interactive {
         }
     }
 
-    //print black pixel count for square area with mouse click at top left corner
     @Override
     public void mouseClicked(int mouseX, int mouseY, DImage img) {
+        //print black pixel count for square area with mouse click at top left corner
         img = fixedThresholdFilter.processImage(img);
         short[][] grid = img.getBWPixelGrid();
         int bubbleSize = 20;

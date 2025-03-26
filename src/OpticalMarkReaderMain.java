@@ -19,27 +19,8 @@ public class OpticalMarkReaderMain {
         String pathToPdf = fileChooser();
         System.out.println("Loading pdf at " + pathToPdf);
 
-        /*
-        Your code here to...
-        (1).  Load the pdf
-        (2).  Loop over its pages
-        (3).  Create a DImage from each page and process its pixels
-        (4).  Output 2 csv files
-         "First, a scores file that says, for each test, which questions were right and wrong, as well as the overall total correct."
-         "For example:
-         page, # right, q1, q2, q3, q4, q5, q6, q7, q8, …
-         1, 12, right, right, right, right right, right right, ….
-         2, 10, right, wrong, right, right, right, wrong, ….
-         3, 2, wrong, wrong, wrong, wrong, right, …."
-         TODO: "you must also output an item analysis file which says,
-          for each test question, the total number of students who got it wrong in the batch of images you processed."
-         */
-
-        //TODO: item analysis csv
-        // get numQuestions,
-        // create arrayList of question objects (?)
-        // for each question loop over num pages, increment counter for either right/wrong students
-        // add/subtract from numQuestions
+        String scoresFilePath = "scores.csv";
+        String itemAnalysisFilePath = "itemAnalysis.csv";
 
         //TODO: append headers in methods?
         StringBuilder scoresData = new StringBuilder();
@@ -53,7 +34,7 @@ public class OpticalMarkReaderMain {
         filter.numQuestions = filter.getNumQuestions(new DImage(in.get(0))); // get number of questions from first page of pdf
         numQuestions = filter.numQuestions;
 
-        //TODO: make constant, then in getPageScores() can use this instead of creating new dimage of first page every page
+        //TODO: make constant, then in getPageScores() can use this instead of creating new DImage of first page every page
         DImage img0 = new DImage(in.get(0));
 
         for (int i = 0; i < numQuestions; i++) {
@@ -61,8 +42,6 @@ public class OpticalMarkReaderMain {
             scoreHeaders.append(", q").append(i+1);
         }
 
-        //TODO: replace with csv
-        //System.out.println(scoreHeaders);
         scoresData.append(scoreHeaders);
 
         itemAnalysisData.append(itemAnalysisHeaders);
@@ -71,29 +50,23 @@ public class OpticalMarkReaderMain {
         for (int i = 0; i < in.size(); i++) {
             DImage img = new DImage(in.get(i)); // create DImage from current PImage
             System.out.println("Running filter on page "+ (i+1) +" of "+in.size());  // print which page is being run on
-            //filter.getResult(img); // process current DImage
-            System.out.println(filter.getResult(img)); // process current DImage
+            //System.out.println(filter.getResult(img)); // process current DImage
 
-            StringBuilder currAnswers = new StringBuilder();
-            StringBuilder currLine = new StringBuilder();
-
-            //TODO: replace with csv
-            //TODO: make this a method
-            //System.out.println(getPageScores(i,img));
             scoresData.append("\n").append(getPageScores(i,img));
 
-            //scores.append(filter.getResult(img));
         }
 
-        //System.out.println(getItemAnalysis(in));
         itemAnalysisData.append("\n").append(getItemAnalysis(in));
 
-        writeDataToFile("scores.txt", String.valueOf(scoresData));
-        writeDataToFile("itemAnalysis.txt", String.valueOf(itemAnalysisData));
+        writeDataToFile(scoresFilePath, String.valueOf(scoresData));
+        writeDataToFile(itemAnalysisFilePath, String.valueOf(itemAnalysisData));
 
-        //use if want to read files
-        //String data = readFile("myFile.txt");
-        //System.out.println("File contains: " + data);
+        //print file data to console
+        String scoresDataRead = readFile(scoresFilePath);
+        System.out.println(scoresFilePath+"\n"+ scoresDataRead);
+
+        String itemAnalysisDataRead = readFile(itemAnalysisFilePath);
+        System.out.println(itemAnalysisFilePath+"\n" + itemAnalysisDataRead);
 
     }
 
@@ -118,12 +91,10 @@ public class OpticalMarkReaderMain {
                 //append curr answer to pageScores string builder
                 //if current answer in curr image == curr answer in first page
                 if(filter.getResult(img).get(qIndex) == filter.getResult(new DImage(in.get(0))).get(qIndex)){
-                    //pageScores.append(", ").append("right");
                     numCorrect++;
                     answerCorrectness.add("right");
                 }
                 else{
-                    //pageScores.append(", ").append("wrong");
                     answerCorrectness.add("wrong");
                 }
             }
@@ -135,13 +106,6 @@ public class OpticalMarkReaderMain {
         }
         return pageScores;
     }
-
-    /*
-    public static StringBuilder createScoresCSV(){
-
-    }
-
-     */
 
     public static StringBuilder getItemAnalysis(ArrayList<PImage> in){
         StringBuilder questionHowManyMissed = new StringBuilder();
