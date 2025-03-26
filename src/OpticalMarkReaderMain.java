@@ -14,6 +14,7 @@ public class OpticalMarkReaderMain {
 
     static DisplayInfoFilter filter = new DisplayInfoFilter(); // create DisplayInfoFilter object
     static ArrayList<PImage> in = new ArrayList<>();
+    static DImage img0;
 
     public static void main(String[] args) throws IOException {
         String pathToPdf = fileChooser();
@@ -22,41 +23,31 @@ public class OpticalMarkReaderMain {
         String scoresFilePath = "scores.csv";
         String itemAnalysisFilePath = "itemAnalysis.csv";
 
-        //TODO: append headers in methods?
-        StringBuilder scoresData = new StringBuilder();
-        StringBuilder scoreHeaders = new StringBuilder("page, # right");
+        StringBuilder scoresData = new StringBuilder("page, # right");
 
-        StringBuilder itemAnalysisData = new StringBuilder();
-        StringBuilder itemAnalysisHeaders = new StringBuilder("question, # wrong");
+        StringBuilder itemAnalysisData = new StringBuilder("question, # wrong");
 
         in = PDFHelper.getPImagesFromPdf(pathToPdf); // create arraylist of PImages from each page of pdf
 
-        filter.numQuestions = filter.getNumQuestions(new DImage(in.get(0))); // get number of questions from first page of pdf
+        filter.numQuestions = filter.numQuestions(new DImage(in.get(0))); // get number of questions from first page of pdf
         numQuestions = filter.numQuestions;
 
-        //TODO: make constant, then in getPageScores() can use this instead of creating new DImage of first page every page
-        DImage img0 = new DImage(in.get(0));
+        img0 = new DImage(in.get(0));
 
         for (int i = 0; i < numQuestions; i++) {
             //append question numbers to col header string builder
-            scoreHeaders.append(", q").append(i+1);
+            scoresData.append(", q").append(i+1);
         }
-
-        scoresData.append(scoreHeaders);
-
-        itemAnalysisData.append(itemAnalysisHeaders);
 
         // loop over each page in arraylist of PImages
         for (int i = 0; i < in.size(); i++) {
             DImage img = new DImage(in.get(i)); // create DImage from current PImage
             System.out.println("Running filter on page "+ (i+1) +" of "+in.size());  // print which page is being run on
             //System.out.println(filter.getResult(img)); // process current DImage
-
-            scoresData.append("\n").append(getPageScores(i,img));
-
+            scoresData.append("\n").append(pageScores(i,img));
         }
 
-        itemAnalysisData.append("\n").append(getItemAnalysis(in));
+        itemAnalysisData.append("\n").append(itemAnalysis(in));
 
         writeDataToFile(scoresFilePath, String.valueOf(scoresData));
         writeDataToFile(itemAnalysisFilePath, String.valueOf(itemAnalysisData));
@@ -71,7 +62,7 @@ public class OpticalMarkReaderMain {
     }
 
     //get scores for specified page
-    public static StringBuilder getPageScores(int pageIndex, DImage img) {
+    public static StringBuilder pageScores(int pageIndex, DImage img) {
         StringBuilder pageScores = new StringBuilder(); //line for curr page with page num, num right, right/wrong etc.
         pageScores.append(pageIndex+1).append(", "); // append curr page num
         if(pageIndex==0){
@@ -90,7 +81,8 @@ public class OpticalMarkReaderMain {
             for (int qIndex = 0; qIndex < numQuestions; qIndex++) {
                 //append curr answer to pageScores string builder
                 //if current answer in curr image == curr answer in first page
-                if(filter.getResult(img).get(qIndex) == filter.getResult(new DImage(in.get(0))).get(qIndex)){
+                //if(filter.result(img).get(qIndex) == filter.result(new DImage(in.get(0))).get(qIndex)){
+                if(filter.result(img).get(qIndex) == filter.result(img0).get(qIndex)){
                     numCorrect++;
                     answerCorrectness.add("right");
                 }
@@ -107,13 +99,13 @@ public class OpticalMarkReaderMain {
         return pageScores;
     }
 
-    public static StringBuilder getItemAnalysis(ArrayList<PImage> in){
+    public static StringBuilder itemAnalysis(ArrayList<PImage> in){
         StringBuilder questionHowManyMissed = new StringBuilder();
         ArrayList<ArrayList<Integer>> resultsList = new ArrayList<>();
         //loop over each page
-        for (int i = 0; i < in.size(); i++) {
-            DImage img = new DImage(in.get(i)); // create DImage from current PImage
-            resultsList.add(filter.getResult(img)); //add results of curr page to arraylist of results
+        for (int page = 0; page < in.size(); page++) {
+            DImage img = new DImage(in.get(page)); // create DImage from current PImage
+            resultsList.add(filter.result(img)); //add results of curr page to arraylist of results
         }
         //loop over each question
         for (int qIndex = 0; qIndex < numQuestions; qIndex++) {
